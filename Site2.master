@@ -1,0 +1,120 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="Site2.master.cs" Inherits="Site2" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1" runat="server">
+    <%--<link href="css/jquery.ui.all.css" rel="stylesheet" type="text/css" />--%>
+    <title>康橋國際學校-訪客入校系統</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <script src="Scripts/jquery-1.10.2.js" type="text/javascript"></script>
+    <script src="Scripts/ui/jquery.ui.core.js" type="text/javascript"></script>
+    <script src="Scripts/ui/jquery.ui.position.js" type="text/javascript"></script>
+    <script src="Scripts/ui/jquery.ui.widget.js" type="text/javascript"></script>
+    <script src="Scripts/ui/jquery-ui.custom.js" type="text/javascript"></script>
+    <script src="Scripts/ui/jquery.ui.datepicker.js" type="text/javascript"></script>
+    <script src="Scripts/ui/jquery.ui.menu.js" type="text/javascript"></script>
+    <script src="Scripts/jquery.blockUI.js" type="text/javascript"></script>
+    <link href="Styles/Site.css" rel="stylesheet" type="text/css" />
+    <link href="css/jquery-ui-1.10.4.custom.css" rel="stylesheet" type="text/css" />
+    
+    <asp:ContentPlaceHolder id="HeadContent" runat="server">
+    </asp:ContentPlaceHolder>
+    <script type="text/javascript">
+        $(function () {
+            $("#menu_User").menu();
+            $("#menu_Admin").menu();
+        });        
+    </script>
+    <style type="text/css">
+        body {
+            background-image: url(pic/squared_metal.png);
+            /*background-color:#f4f4f4;*/
+            width: 100%;
+        }
+        .ui-menu
+        {
+            width: 150px;
+            font-size: 1em;
+        }
+        .style1
+        {
+            width: 168px;
+        }
+    </style>
+</head>
+<body>
+    <form id="form1" runat="server">
+    <div class="page">
+         <div class="header" style="font-family: 微軟正黑體">
+            <div class="title">
+                <h1>
+                    <asp:Label ID="Label9" runat="server" Text='<%$ Resources:Resource,KCISvisitorToSchool %>'></asp:Label>
+&nbsp;</h1>
+            </div>
+            <div class="loginDisplay">
+            </div>
+            <div class="clear hideSkiplink" style="text-align: right">
+                <asp:Button ID="Button1" runat="server" Text='<%$Resources:Resource,Logout %>' onclick="Button1_Click" />
+                &nbsp;&nbsp;&nbsp;
+            </div>
+        </div>
+        <div class="main">
+            <asp:Literal ID="Literal_Script" runat="server"></asp:Literal>
+            <table style="width: 100%;">
+                <tr>
+                    <td valign="top" class="style1">
+                        <div align="center">
+                            <asp:Panel ID="Panel_User" runat="server" Visible="False">
+                                <ul id="menu_User">
+                                    <li class="ui-state-disabled">
+                                        <asp:Label ID="Label2" runat="server" Text='<%$Resources:Resource,User %>'></asp:Label></li>
+                                    <li><a href="Fill_in.aspx">
+                                        <asp:Label ID="Label3" runat="server" Text='<%$Resources:Resource,ApplicationForm %>'></asp:Label></a></li> 
+                                    
+                                    <li><a href="PersonalList.aspx">
+                                        <asp:Label ID="Label4" runat="server" Text='<%$Resources:Resource,RecordOfRequestsMade %>'></asp:Label></a></li>
+                                    
+                                    <li><a href="NotSignList.aspx">
+                                        <asp:Label ID="Label5" runat="server" Text='<%$Resources:Resource,PendingApproval %>'></asp:Label></a></li>
+
+                                    <li><a href="SignList.aspx">
+                                        <asp:Label ID="Label6" runat="server" Text='<%$Resources:Resource,ApprovedRequestRecord %>'></asp:Label></a></li>
+                                    
+                                    <li><a href="List.aspx">
+                                        <asp:Label ID="Label7" runat="server" Text='<%$Resources:Resource,TotalForms %>'></asp:Label></a></li>
+                                    <li><a href="Manual.aspx">
+                                        <asp:Label ID="Label8" runat="server" Text='<%$Resources:Resource,Manual %>'></asp:Label></a></li>
+                                    
+                                </ul>
+                            </asp:Panel>
+                            
+                            <br />
+                            <asp:Panel ID="Panel_Admin" runat="server" Visible="False">
+                                <ul id="menu_Admin">
+                                    <li class="ui-state-disabled"><span>管理者</span></li>    
+                                    <li><a href="AdminTest.aspx">變更身分</a></li>
+                                    <li><a href="AuthorityManager.aspx">權限管理</a></li>
+                                    <li><a href="VTypeManage.aspx">訪客類別管理</a></li>
+                                    <li><a href="EditFlow.aspx">特殊流程管理</a></li>
+                                    <li><a href="EditNotice.aspx">通知人員管理</a></li>
+                                </ul>
+                            </asp:Panel>
+                        </div>
+                    </td>
+                    <td width="750px" valign="top">
+                        <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="clear">
+        </div>
+    </div>
+    <div class="footer">
+        <asp:Label ID="Label1" runat="server" Text='<%$Resources:Resource,Help %>'></asp:Label>
+    </div>
+    </form>
+</body>
+</html>

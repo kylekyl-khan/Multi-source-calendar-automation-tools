@@ -1,0 +1,684 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Name" xml:space="preserve">
+    <value>姓名</value>
+  </data>
+  <data name="DeptName" xml:space="preserve">
+    <value>部門</value>
+  </data>
+  <data name="VisitorType" xml:space="preserve">
+    <value>訪客類別</value>
+  </data>
+  <data name="EmployeeID" xml:space="preserve">
+    <value>員編</value>
+  </data>
+  <data name="Campus" xml:space="preserve">
+    <value>校區</value>
+  </data>
+  <data name="RequestDate" xml:space="preserve">
+    <value>需求日期</value>
+  </data>
+  <data name="VisitorInfo" xml:space="preserve">
+    <value>訪客資料</value>
+  </data>
+  <data name="intoSchoolInfo" xml:space="preserve">
+    <value>入校資料</value>
+  </data>
+  <data name="Notes" xml:space="preserve">
+    <value>注意事項</value>
+  </data>
+  <data name="ProofDocument" xml:space="preserve">
+    <value>上傳附件</value>
+  </data>
+  <data name="Process" xml:space="preserve">
+    <value>簽核流程</value>
+  </data>
+  <data name="SendGuardEmail" xml:space="preserve">
+    <value>預先通知警衛</value>
+  </data>
+  <data name="VStatus" xml:space="preserve">
+    <value>表單狀態</value>
+  </data>
+  <data name="VNo" xml:space="preserve">
+    <value>表單單號</value>
+  </data>
+  <data name="Applicant" xml:space="preserve">
+    <value>申請人</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>一般使用者</value>
+  </data>
+  <data name="ApplicationForm" xml:space="preserve">
+    <value>申請表單</value>
+  </data>
+  <data name="RecordOfRequestsMade" xml:space="preserve">
+    <value>個人表單</value>
+  </data>
+  <data name="PendingApproval" xml:space="preserve">
+    <value>待審核表單</value>
+  </data>
+  <data name="ApprovedRequestRecord" xml:space="preserve">
+    <value>已審核表單</value>
+  </data>
+  <data name="TotalForms" xml:space="preserve">
+    <value>所有表單</value>
+  </data>
+  <data name="HistoryRecord" xml:space="preserve">
+    <value>歷史表單</value>
+  </data>
+  <data name="ApplicationForm2" xml:space="preserve">
+    <value>》申請表單</value>
+  </data>
+  <data name="RecordOfRequestsMade2" xml:space="preserve">
+    <value>》個人表單</value>
+  </data>
+  <data name="PendingApproval2" xml:space="preserve">
+    <value>》待審核表單</value>
+  </data>
+  <data name="ApprovedRequestRecord2" xml:space="preserve">
+    <value>》已審核表單</value>
+  </data>
+  <data name="TotalForms2" xml:space="preserve">
+    <value>》所有表單</value>
+  </data>
+  <data name="SelectVType" xml:space="preserve">
+    <value>請選擇訪客類別：</value>
+  </data>
+  <data name="ApplyDate" xml:space="preserve">
+    <value>申請日期：</value>
+  </data>
+  <data name="SearchByApplicant" xml:space="preserve">
+    <value>依申請人搜尋(員編或姓名)：</value>
+  </data>
+  <data name="SearchByNoOrApplicant" xml:space="preserve">
+    <value>請輸入單號或申請人搜尋：</value>
+  </data>
+  <data name="year" xml:space="preserve">
+    <value>年</value>
+  </data>
+  <data name="month" xml:space="preserve">
+    <value>月</value>
+  </data>
+  <data name="KCISvisitorToSchool" xml:space="preserve">
+    <value>康橋國際學校-訪客入校系統</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>若對訪客入校系統有疑慮或系統發生錯誤，請洽 #02-82112000#8297 董光哲(James Tung)</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>登出</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>送出</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Upload" xml:space="preserve">
+    <value>上傳</value>
+  </data>
+  <data name="Explanation" xml:space="preserve">
+    <value>需求單類別說明：</value>
+  </data>
+  <data name="Ex1" xml:space="preserve">
+    <value>資本類需求：資本類採購、調撥、設備建置。</value>
+  </data>
+  <data name="Ex2" xml:space="preserve">
+    <value>人力類需求：人力搬運、場地佈置、空調音響、交管支援。</value>
+  </data>
+  <data name="Ex3" xml:space="preserve">
+    <value>輸出類需求：海報、彩印、印章。</value>
+  </data>
+  <data name="Ex4" xml:space="preserve">
+    <value>消耗品(文具、禮品、Polo衫、帽子、哨子)到內部資源網總會系統：線上申辦內之『消耗品申請』</value>
+  </data>
+  <data name="Ex5" xml:space="preserve">
+    <value>鑰匙、公務車借用到總務部填單申請。</value>
+  </data>
+  <data name="day" xml:space="preserve">
+    <value>日</value>
+  </data>
+  <data name="AddNewItem" xml:space="preserve">
+    <value>+新增品項</value>
+  </data>
+  <data name="Ex6" xml:space="preserve">
+    <value>※大量圖書需求請先填寫圖書需求單再附件</value>
+  </data>
+  <data name="UploadProof" xml:space="preserve">
+    <value>下載附件圖書需求單</value>
+  </data>
+  <data name="Ex7" xml:space="preserve">
+    <value>※單一檔案以4MB為限，上傳檔案類型：doc、docx、xls、xlsx、pdf、jpg、jpeg、bmp、png</value>
+  </data>
+  <data name="Ex8" xml:space="preserve">
+    <value>請注意:</value>
+  </data>
+  <data name="Ex9" xml:space="preserve">
+    <value>請提供高解析度的檔案</value>
+  </data>
+  <data name="Ex10" xml:space="preserve">
+    <value>海報或列印檔案格式：PDF、JPG</value>
+  </data>
+  <data name="Ex11" xml:space="preserve">
+    <value>上傳檔案前先設定列印尺吋</value>
+  </data>
+  <data name="Ex12" xml:space="preserve">
+    <value>若有檔案格式方面的問題，可撥打分機#2258 (Verena)</value>
+  </data>
+  <data name="MakeSureProcess" xml:space="preserve">
+    <value>※請務必確認流程是否正確，若流程有誤請聯絡 #8297 董光哲(James)</value>
+  </data>
+  <data name="ItemName" xml:space="preserve">
+    <value>物品名稱</value>
+  </data>
+  <data name="Standard" xml:space="preserve">
+    <value>規格</value>
+  </data>
+  <data name="Amount" xml:space="preserve">
+    <value>數量</value>
+  </data>
+  <data name="UnitPrice" xml:space="preserve">
+    <value>單價</value>
+  </data>
+  <data name="ApplicationExplanation" xml:space="preserve">
+    <value>用途說明</value>
+  </data>
+  <data name="Ex13" xml:space="preserve">
+    <value>※新增品項填寫完成，請務必點選「品項送出」</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>類別</value>
+  </data>
+  <data name="ApplicationDate" xml:space="preserve">
+    <value>申請時間</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>狀態</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>單號</value>
+  </data>
+  <data name="NowAllow" xml:space="preserve">
+    <value>目前審核人</value>
+  </data>
+  <data name="NoItemContent" xml:space="preserve">
+    <value>此需求單無申請任何品項，請參閱工作內容</value>
+  </data>
+  <data name="ListOfOpinions" xml:space="preserve">
+    <value>》簽核意見一覽表</value>
+  </data>
+  <data name="PleaseCopy" xml:space="preserve">
+    <value>請購如需單號請複製</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>搜尋</value>
+  </data>
+  <data name="ErrorMsg1" xml:space="preserve">
+    <value>沒有您的組織資料，請向資訊組反應，謝謝!!</value>
+  </data>
+  <data name="ErrorMsg2" xml:space="preserve">
+    <value>沒有您的HCP相關資料，請洽資訊組確認。</value>
+  </data>
+  <data name="ErrorMsg3" xml:space="preserve">
+    <value>請填寫訪客姓名</value>
+  </data>
+  <data name="ErrorMsg4" xml:space="preserve">
+    <value>請填寫學生姓名</value>
+  </data>
+  <data name="ErrorMsg5" xml:space="preserve">
+    <value>預定入校時間格式有誤，請重新選填!</value>
+  </data>
+  <data name="ErrorMsg6" xml:space="preserve">
+    <value>請填寫機關名稱</value>
+  </data>
+  <data name="ErrorMsg7" xml:space="preserve">
+    <value>請填寫領隊姓名</value>
+  </data>
+  <data name="ErrorMsg8" xml:space="preserve">
+    <value>執行資料庫異常，請洽資訊組。</value>
+  </data>
+  <data name="ErrorMsg9" xml:space="preserve">
+    <value>找不到寄件者資料，請洽資訊組。</value>
+  </data>
+  <data name="ErrorMsg10" xml:space="preserve">
+    <value>申請單已送出，請耐心等候審核！</value>
+  </data>
+  <data name="ErrorMsg11" xml:space="preserve">
+    <value>申請單已送出，但發信異常。</value>
+  </data>
+  <data name="ErrorMsg12" xml:space="preserve">
+    <value>僅允許上傳doc, xls, pdf, jpg, png或bmp檔！</value>
+  </data>
+  <data name="ErrorMsg13" xml:space="preserve">
+    <value>單一上傳檔案需小於4MB！</value>
+  </data>
+  <data name="ErrorMsg14" xml:space="preserve">
+    <value>審核完成！</value>
+  </data>
+  <data name="ErrorMsg15" xml:space="preserve">
+    <value>審核完成！但下一位簽核人的信箱已滿無法寄出通知信。</value>
+  </data>
+  <data name="ErrorMsg16" xml:space="preserve">
+    <value>已駁回！</value>
+  </data>
+  <data name="ErrorMsg17" xml:space="preserve">
+    <value>已駁回！發信異常。</value>
+  </data>
+  <data name="ErrorMsg18" xml:space="preserve">
+    <value>請填寫媒體名稱</value>
+  </data>
+  <data name="Xiugang" xml:space="preserve">
+    <value>秀岡</value>
+  </data>
+  <data name="Qingshan" xml:space="preserve">
+    <value>青山</value>
+  </data>
+  <data name="Hsinchu" xml:space="preserve">
+    <value>新竹</value>
+  </data>
+  <data name="WaitingForApproval" xml:space="preserve">
+    <value>審核中</value>
+  </data>
+  <data name="Approved" xml:space="preserve">
+    <value>已核准</value>
+  </data>
+  <data name="Rejected" xml:space="preserve">
+    <value>駁回</value>
+  </data>
+  <data name="AdminDelete" xml:space="preserve">
+    <value>管理者撤銷</value>
+  </data>
+  <data name="NoDataFound" xml:space="preserve">
+    <value>目前搜尋不到任何相關資料</value>
+  </data>
+  <data name="NoProof" xml:space="preserve">
+    <value>尚未上傳</value>
+  </data>
+  <data name="NoProof2" xml:space="preserve">
+    <value>無附件</value>
+  </data>
+  <data name="Already_a" xml:space="preserve">
+    <value>已同意</value>
+  </data>
+  <data name="Already_r" xml:space="preserve">
+    <value>已駁回</value>
+  </data>
+  <data name="Already_t" xml:space="preserve">
+    <value>已轉單</value>
+  </data>
+  <data name="Already_d" xml:space="preserve">
+    <value>已撤銷</value>
+  </data>
+  <data name="ChangeFlow" xml:space="preserve">
+    <value>變更流程</value>
+  </data>
+  <data name="AddHead" xml:space="preserve">
+    <value>新增主管</value>
+  </data>
+  <data name="Head" xml:space="preserve">
+    <value>主管</value>
+  </data>
+  <data name="Order" xml:space="preserve">
+    <value>簽核順序</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>刪除</value>
+  </data>
+  <data name="ErrorMsg19" xml:space="preserve">
+    <value>請填寫姓名</value>
+  </data>
+  <data name="ErrorMsg20" xml:space="preserve">
+    <value>請填寫學生班級</value>
+  </data>
+  <data name="SearchByCampus" xml:space="preserve">
+    <value>依校區搜尋：</value>
+  </data>
+  <data name="Linko" xml:space="preserve">
+    <value>林口</value>
+  </data>
+  <data name="carNum" xml:space="preserve">
+    <value>車號</value>
+  </data>
+  <data name="parentName" xml:space="preserve">
+    <value>家長姓名</value>
+  </data>
+  <data name="phoneNum" xml:space="preserve">
+    <value>聯絡電話</value>
+  </data>
+  <data name="stuClass" xml:space="preserve">
+    <value>學生班級</value>
+  </data>
+  <data name="stuName" xml:space="preserve">
+    <value>學生姓名</value>
+  </data>
+  <data name="stuNum" xml:space="preserve">
+    <value>學生學號</value>
+  </data>
+  <data name="visitorNum" xml:space="preserve">
+    <value>來訪人數</value>
+  </data>
+  <data name="alumniName" xml:space="preserve">
+    <value>校友姓名</value>
+  </data>
+  <data name="companyName" xml:space="preserve">
+    <value>廠商名稱</value>
+  </data>
+  <data name="stuNum_inschool" xml:space="preserve">
+    <value>在學學號</value>
+  </data>
+  <data name="visitorNum2" xml:space="preserve">
+    <value>入校人數</value>
+  </data>
+  <data name="visitorNum_alumni" xml:space="preserve">
+    <value>隨行親友人數(非校友)</value>
+  </data>
+  <data name="groupName" xml:space="preserve">
+    <value>團體名稱</value>
+  </data>
+  <data name="leaderName" xml:space="preserve">
+    <value>領隊姓名</value>
+  </data>
+  <data name="visitorName" xml:space="preserve">
+    <value>訪客姓名</value>
+  </data>
+  <data name="governmentName" xml:space="preserve">
+    <value>機關名稱</value>
+  </data>
+  <data name="intoSchoolBeginTime" xml:space="preserve">
+    <value>預定入校時間</value>
+  </data>
+  <data name="intoSchoolEndTime" xml:space="preserve">
+    <value>預定離校時間</value>
+  </data>
+  <data name="intoSchoolPurpose" xml:space="preserve">
+    <value>入校目的</value>
+  </data>
+  <data name="mediaName" xml:space="preserve">
+    <value>媒體名稱</value>
+  </data>
+  <data name="receptionDepartment" xml:space="preserve">
+    <value>接待單位/人員</value>
+  </data>
+  <data name="constructionArea" xml:space="preserve">
+    <value>施工區域</value>
+  </data>
+  <data name="interviewLocation" xml:space="preserve">
+    <value>採訪地點</value>
+  </data>
+  <data name="specialRequest" xml:space="preserve">
+    <value>特殊需求</value>
+  </data>
+  <data name="campusTour" xml:space="preserve">
+    <value>校園導覽</value>
+  </data>
+  <data name="deliveryOfGoods" xml:space="preserve">
+    <value>貨物運送</value>
+  </data>
+  <data name="interview" xml:space="preserve">
+    <value>採訪</value>
+  </data>
+  <data name="meal" xml:space="preserve">
+    <value>用餐</value>
+  </data>
+  <data name="schoolParking" xml:space="preserve">
+    <value>校內停車</value>
+  </data>
+  <data name="visitprincipal" xml:space="preserve">
+    <value>拜訪校長</value>
+  </data>
+  <data name="ErrorMsg5_2" xml:space="preserve">
+    <value>預定離校時間格式有誤，請重新選填!</value>
+  </data>
+  <data name="ErrorMsg21" xml:space="preserve">
+    <value>請填寫學生學號</value>
+  </data>
+  <data name="ErrorMsg22" xml:space="preserve">
+    <value>請填寫家長姓名</value>
+  </data>
+  <data name="ErrorMsg23" xml:space="preserve">
+    <value>請填寫校友姓名</value>
+  </data>
+  <data name="ErrorMsg24" xml:space="preserve">
+    <value>請填寫廠商名稱</value>
+  </data>
+  <data name="ErrorMsg25" xml:space="preserve">
+    <value>請填寫團體名稱</value>
+  </data>
+  <data name="NoticePeople" xml:space="preserve">
+    <value>通知對象</value>
+  </data>
+  <data name="UpdateMsg" xml:space="preserve">
+    <value>已更新記錄</value>
+  </data>
+  <data name="Record" xml:space="preserve">
+    <value>》入校記錄 (事後)</value>
+  </data>
+  <data name="saveButton" xml:space="preserve">
+    <value>儲存/更新入校記錄</value>
+  </data>
+  <data name="VForm" xml:space="preserve">
+    <value>》訪客入校申請單</value>
+  </data>
+  <data name="ErrorMsg10_" xml:space="preserve">
+    <value>申請單已通過！</value>
+  </data>
+  <data name="ErrorMsg26" xml:space="preserve">
+    <value>請填寫入校人數</value>
+  </data>
+  <data name="ErrorMsg27" xml:space="preserve">
+    <value>請填寫來訪人數</value>
+  </data>
+  <data name="ErrorMsg28" xml:space="preserve">
+    <value>請填寫隨行親友人數(非校友)</value>
+  </data>
+  <data name="ErrorMsg29" xml:space="preserve">
+    <value>手動新增通知對象尚未完成新增</value>
+  </data>
+  <data name="intoSchoolBeginTime_real" xml:space="preserve">
+    <value>實際入校時間</value>
+  </data>
+  <data name="intoSchoolEndTime_real" xml:space="preserve">
+    <value>實際離校時間</value>
+  </data>
+  <data name="Record_" xml:space="preserve">
+    <value>入校記錄</value>
+  </data>
+  <data name="intoSchoolStatus" xml:space="preserve">
+    <value>入校狀態</value>
+  </data>
+  <data name="insertProofDocument" xml:space="preserve">
+    <value>新增附件</value>
+  </data>
+  <data name="inserted" xml:space="preserve">
+    <value>已新增</value>
+  </data>
+  <data name="ModifyVisitorInfo" xml:space="preserve">
+    <value>修改訪客資料</value>
+  </data>
+  <data name="CancelAndPrePage" xml:space="preserve">
+    <value>取消並回至上一頁</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>確定並修改</value>
+  </data>
+  <data name="ModifyITSInfo" xml:space="preserve">
+    <value>修改入校資料</value>
+  </data>
+  <data name="Search1" xml:space="preserve">
+    <value>請輸入員編或姓名</value>
+  </data>
+  <data name="Insert" xml:space="preserve">
+    <value>新增</value>
+  </data>
+  <data name="insertByUser" xml:space="preserve">
+    <value>手動新增通知對象</value>
+  </data>
+  <data name="Manual" xml:space="preserve">
+    <value>操作手冊</value>
+  </data>
+  <data name="vManual" xml:space="preserve">
+    <value>訪客入校系統 操作手冊</value>
+  </data>
+  <data name="visitTeacher" xml:space="preserve">
+    <value>拜訪師長</value>
+  </data>
+  <data name="ErrorMsg5_3" xml:space="preserve">
+    <value>接待單位/人員尚未填寫</value>
+  </data>
+  <data name="receptionLocation" xml:space="preserve">
+    <value>接待地點</value>
+  </data>
+  <data name="ErrorMsg5_4" xml:space="preserve">
+    <value>接待地點尚未填寫</value>
+  </data>
+  <data name="ErrorMsg5_5" xml:space="preserve">
+    <value>入校目的尚未填寫</value>
+  </data>
+  <data name="NoParking" xml:space="preserve">
+    <value>不需安排車位</value>
+  </data>
+  <data name="ModifyNotes" xml:space="preserve">
+    <value>修改注意事項</value>
+  </data>
+  <data name="SearchByDate" xml:space="preserve">
+    <value>依日期搜尋：</value>
+  </data>
+  <data name="SchoolActivity" xml:space="preserve">
+    <value>學校活動</value>
+  </data>
+  <data name="Escalator_Text" xml:space="preserve">
+    <value>手扶梯開放(請於注意事項內填寫需開放時段)</value>
+  </data>
+  <data name="Escalator_Value" xml:space="preserve">
+    <value>手扶梯開放</value>
+  </data>
+  <data name="StaffName" xml:space="preserve">
+    <value>教職員姓名</value>
+  </data>
+  <data name="ErrorMsg5_6" xml:space="preserve">
+    <value>預定入校時間不得小於今日!</value>
+  </data>
+  <data name="ErrorMsg5_7" xml:space="preserve">
+    <value>預定離校時間不得小於今日!</value>
+  </data>
+  <data name="ErrorMsg5_8" xml:space="preserve">
+    <value>預定入校時間區間不得大於一週!</value>
+  </data>
+</root>

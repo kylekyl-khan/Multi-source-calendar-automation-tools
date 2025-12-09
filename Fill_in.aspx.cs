@@ -1,0 +1,1314 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.IO;
+using System.Text;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+public partial class Fill_in : System.Web.UI.Page
+{
+  readonly AboutHCP HCP = new AboutHCP();
+  readonly AboutEIP EIP = new AboutEIP();
+  readonly ClassBasic basic = new ClassBasic();
+  readonly VtoSchool VtoSchool = new VtoSchool();
+  readonly AboutMail Mail = new AboutMail();
+  protected void Page_Load(object sender, EventArgs e)
+  {
+    if (Session["EmployeeID"] == null)
+    {
+      Response.Redirect("Logon.aspx");
+      return;
+    }
+
+    if (!IsPostBack)
+    {
+      Session["FileTable"] = null;
+      if (Session["EmployeeID"] == null)
+      {
+        Response.Redirect("Logon.aspx");
+        return;
+      }
+      EmployeeID.Text = Session["EmployeeID"].ToString();
+      Name.Text = Session["Name"].ToString();
+      AccountID.Text = Session["AccountID"].ToString();
+      Campus_save.Text = Session["Campus"].ToString();
+      if (Session["UserCulture"].ToString() == "中文")
+      {
+        Campus.Text = Session["Campus"].ToString();
+      }
+      else
+      {
+        if (Session["Campus"].ToString() == "秀岡校區")
+        {
+          Campus.Text = "Xiugang";
+        }
+        else if (Session["Campus"].ToString() == "青山校區")
+        {
+          Campus.Text = "Qingshan";
+        }
+        else if (Session["Campus"].ToString() == "新竹校區")
+        {
+          Campus.Text = "Hsinchu";
+        }
+        else if (Session["Campus"].ToString() == "林口校區")
+        {
+          Campus.Text = "Linko";
+        }
+      }
+      DeptName.Text = Session["DeptName"].ToString();
+      //顯示下拉式的類別選項
+      getVType();
+      //判斷EIP有沒有資料組織資料
+
+      if (EIP.GetDeptID(EmployeeID.Text) == string.Empty)
+      {
+        //沒有您的組織資料
+        basic.Script_AlertHref(this.Page, Resources.Resource.ErrorMsg1, "PersonalList.aspx");
+        return;
+      }
+      else
+      {
+        DeptID.Text = EIP.GetDeptID(Session["EmployeeID"].ToString());
+      }
+    }
+    //上傳檔案
+    Button_FileUpload1.Attributes["style"] = "display: none;";
+    _myTableBind();
+  }
+  //下拉式選需求單類別
+  protected void getVType()
+  {
+    DropDownList1.Items.Clear();
+    if (Session["UserCulture"].ToString() == "中文")
+    {
+      DropDownList1.Items.Add(new ListItem("請選擇", "請選擇"));
+    }
+    else
+    {
+      DropDownList1.Items.Add(new ListItem("Please select", "請選擇"));
+    }
+    string DBName = "DB_Tea_VToSchool";
+    SqlConnection cn = new SqlConnection(ConfigurationManager.ConnectionStrings[DBName].ConnectionString.ToString());
+    cn.Open();
+    StringBuilder str_cmd = new StringBuilder();
+    if (Session["UserCulture"].ToString() == "中文")
+    {
+      str_cmd.AppendLine("select VTypeName,VTypeID");
+      str_cmd.AppendLine("from Sys_V_Type");
+      str_cmd.AppendLine("where Campus=@campus");
+      str_cmd.AppendLine("order by sid");
+    }
+    else
+    {
+      str_cmd.AppendLine("select VTypeName,VTypeID");
+      str_cmd.AppendLine("from Sys_V_Type");
+      str_cmd.AppendLine("where Campus=@campus");
+      str_cmd.AppendLine("order by sid");
+    }
+
+    SqlCommand cmd = new SqlCommand(str_cmd.ToString(), cn);
+    cmd.Parameters.AddWithValue("@campus", Campus_save.Text.Substring(0, 2));
+    SqlDataReader dr = cmd.ExecuteReader();
+    while (dr.Read())
+    {
+      if (Session["UserCulture"].ToString() == "中文")
+      {
+        DropDownList1.Items.Add(new ListItem(dr["VTypeName"].ToString(), dr["VTypeID"].ToString()));
+      }
+      else
+      {
+        DropDownList1.Items.Add(new ListItem(dr["VTypeName"].ToString(), dr["VTypeID"].ToString()));
+      }
+    }
+    dr.Close();
+    cmd.Cancel();
+    cn.Close();
+    cn.Dispose();
+  }
+  protected void DropDownList1_SelectedIndexChanged(object sender, EventArgs e)
+  {
+    //訪客資料Panel開合
+    showInfoPanel();
+    //產生流程
+    showFlowName();
+    //產生通知對象
+    showNoticeName();
+  }
+  //訪客資料 入校資料Panel開合
+  protected void showInfoPanel()
+  {
+    Panel_01.Visible = false;
+    Panel_02.Visible = false;
+    Panel_03.Visible = false;
+    Panel_04.Visible = false;
+    Panel_05.Visible = false;
+    Panel_06.Visible = false;
+    Panel_07.Visible = false;
+    Panel_08.Visible = false;
+    Panel_09.Visible = false;
+    Panel_10.Visible = false;
+    Panel_11.Visible = false;
+    Panel_12.Visible = false;
+    switch (DropDownList1.SelectedValue)
+    {
+      case "1": //一般訪客
+        Panel_01.Visible = true;
+        break;
+      case "2": //外校生家長
+        Panel_02.Visible = true;
+        break;
+      case "3": //政府機關
+        Panel_03.Visible = true;
+        break;
+      case "4": //媒體
+        Panel_04.Visible = true;
+        Panel_09.Visible = true; //採訪地點
+        break;
+      case "5": //在籍學生家長
+        Panel_05.Visible = true;
+        break;
+      case "6": //校友
+        Panel_06.Visible = true;
+        break;
+      case "7": //廠商
+        Panel_07.Visible = true;
+        Panel_10.Visible = true; //施工區域
+        break;
+      case "8": //團體訪客
+        Panel_08.Visible = true;
+        break;
+      case "9": //學校活動
+        Panel_11.Visible = true;
+        break;
+      case "10": //假日到校
+        Panel_12.Visible = true;
+        TextBox13.Text = Name.Text;
+        TextBox13.Enabled = false;
+        break;
+    }
+  }
+  //產生流程
+  protected void showFlowName()
+  {
+    //簽核流程
+    try
+    {
+      string FlowNo = string.Empty;
+      VtoSchool.getFlowNo(Campus_save.Text.Substring(0, 2), DropDownList1.SelectedValue, out FlowNo);
+
+      if (FlowNo == "normal5")
+      {
+        //一般流程跑至主任
+        generateFlow(40);
+      }
+      else if (FlowNo == "normal8")
+      {
+        //一般流程跑至校長
+        generateFlow(70);
+      }
+      else
+      {
+        List<string> EmployeeID_ = new List<string>();
+        Literal_Flow.Text = "";
+        //特殊流程
+        EmployeeID_ = getFlowEmployeeID();
+
+        for (int i = 0; i < EmployeeID_.Count; i++)
+        {
+          if (EmployeeID_[i] == EmployeeID.Text)
+          {
+            if (EmployeeID_.Count == 1)
+            {
+              Literal_Flow.Text = "無需簽核，直接通過";
+            }
+          }
+          else
+          {
+            Literal_Flow.Text = Literal_Flow.Text + "【" + HCP.GetMemberName(EmployeeID_[i]) + "】→";
+          }
+        }
+
+        Literal_Flow.Text = "<span style='color:#1145d2;'>" + Literal_Flow.Text.TrimEnd('→') + "</span>";
+      }
+    }
+    catch (Exception ee)
+    {
+      Mail.Send_Mail(Request.Url.Host, "簽核流程異常處理", ee.Message.ToString(), ConfigurationManager.AppSettings["AdminMail"]);
+    }
+  }
+  //通知對象
+  protected void showNoticeName()
+  {
+    string VTypeID = DropDownList1.SelectedValue;
+    Boolean PreSchoolDept = false;
+    Boolean PreSchoolVTypeID = false;
+
+    //20200917 新竹校區幼兒園特殊流程，幼兒園一般訪客、外校生家長、政府機關、媒體、在校生家長、團體訪客，通知對象自訂 VTypeID = 11
+    if ((DeptID.Text == "HC108001") || (DeptID.Text == "HC108002") || (DeptID.Text == "HC108003"))
+    {
+      PreSchoolDept = true;
+    }
+    if ((VTypeID == "1") || (VTypeID == "2") || (VTypeID == "3") || (VTypeID == "4") || (VTypeID == "5") || (VTypeID == "7"))
+    {
+      PreSchoolVTypeID = true;
+    }
+    if (PreSchoolDept && PreSchoolVTypeID)
+    {
+      VTypeID = "11";
+    }
+
+    string NoticeName = string.Empty;
+    string NoticeEmployeeID = string.Empty;
+    VtoSchool.getNotice(Campus_save.Text.Substring(0, 2), VTypeID, out NoticeName, out NoticeEmployeeID);
+    Literal_Notice.Text = "警衛人員、" + NoticeName;
+    Literal_Notice.Text = "<span style='color:#1145d2;'>" + Literal_Notice.Text.TrimEnd('、') + "</span>";
+  }
+  protected List<string> getFlowEmployeeID()
+  {
+    List<string> EmployeeID = new List<string>();
+    string DBName = "DB_Tea_VToSchool";
+    SqlConnection cn = new SqlConnection(ConfigurationManager.ConnectionStrings[DBName].ConnectionString.ToString());
+    cn.Open();
+    StringBuilder str_cmd = new StringBuilder();
+
+    str_cmd.AppendLine("select b.Series,b.EmployeeID,b.Name");
+    str_cmd.AppendLine("from Sys_V_Type a");
+    str_cmd.AppendLine("left join Sys_V_Flow2 b");
+    str_cmd.AppendLine("on a.FlowNo = b.FlowNo");
+    str_cmd.AppendLine("where a.Campus=@Campus");
+    str_cmd.AppendLine("and a.VTypeID=@VTypeID");
+    str_cmd.AppendLine("order by b.Series");
+    SqlCommand cmd = new SqlCommand(str_cmd.ToString(), cn);
+    cmd.Parameters.AddWithValue("@Campus", Campus_save.Text.Substring(0, 2));
+    cmd.Parameters.AddWithValue("@VTypeID", DropDownList1.SelectedValue);
+    SqlDataReader dr = cmd.ExecuteReader();
+
+    while (dr.Read())
+    {
+      EmployeeID.Add(dr["EmployeeID"].ToString());
+    }
+    dr.Close();
+    cmd.Cancel();
+    cn.Close();
+    cn.Dispose();
+    return EmployeeID;
+  }
+  protected void generateFlow(int MaxJobGrade)
+  {
+    //20200917 新竹校區幼兒園特殊流程，部門為幼兒園且表單為外校生家長與在學生家長類別時，簽核對象只需簽到總園長徐雅婷，將MaxJobGrade = 7;
+    Boolean PreSchoolDept = false;
+    Boolean PreSchoolVTypeID = false;
+
+    if ((DeptID.Text == "HC108001") || (DeptID.Text == "HC108002") || (DeptID.Text == "HC108003"))
+    {
+      PreSchoolDept = true;
+    }
+    if ((DropDownList1.SelectedValue == "2") || (DropDownList1.SelectedValue == "5"))
+    {
+      PreSchoolVTypeID = true;
+    }
+    if (PreSchoolDept && PreSchoolVTypeID)
+    {
+      MaxJobGrade = 60;
+    }
+
+    int MemberJobGrade = EIP.GetJobGrade(Session["EmployeeID"].ToString());
+    string[] Allow_EmployeeID = EIP.GetRouteByJobGrade(EIP.GetDeptID(EmployeeID.Text), MemberJobGrade, MaxJobGrade).Split(';');
+    Allow_EmployeeID = VtoSchool.Get_SpecialSignList(EIP.GetDeptID(EmployeeID.Text), MaxJobGrade, Allow_EmployeeID, EmployeeID.Text);
+
+    Literal_Flow.Text = "";
+
+    for (int i = 0; i < Allow_EmployeeID.GetLength(0); i++)
+    {
+      if (DeptID.Text == "XG108002" && Allow_EmployeeID[i] == "C880926") //主任說 秀岡資源中心招生組 不要跑聖陶主任
+      {
+        continue; //繼續往迴圈的下一個數跑
+      }
+      if (Allow_EmployeeID[i] == "" || Allow_EmployeeID[i] == EmployeeID.Text)
+      {
+        if (Allow_EmployeeID.Length == 1)
+        {
+          Literal_Flow.Text = "無需簽核，直接通過";
+        }
+        continue; //繼續往迴圈的下一個數跑
+      }
+      Literal_Flow.Text = Literal_Flow.Text + "【" + HCP.GetMemberName(Allow_EmployeeID[i]) + "】→";
+    }
+
+    Literal_Flow.Text = "<span style='color:#1145d2;'>" + Literal_Flow.Text.TrimEnd('→') + "</span>";
+
+  }
+
+  protected void Button3_Click(object sender, EventArgs e)
+  {
+    DateTime dtStart;
+    DateTime dtEnd;
+    string startTime = TextBox_startTime.Text;
+    string endTime = TextBox_endTime.Text;
+    int temp_series = 0;
+
+    if (DropDownList1.SelectedValue == "請選擇")
+    {
+      //請選擇訪客類別！
+      basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg6);
+      DropDownList1.Focus();
+      return;
+    }
+    else if (TextBox43.Text.TrimEnd() == string.Empty)
+    {
+      //入校目的尚未填寫
+      basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg5_5);
+      TextBox43.Focus();
+      return;
+    }
+    else if (basic.IsDate(startTime) == false)
+    {
+      //預定入校時間格式有誤，請重新選填!
+      basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg5);
+      TextBox_startTime.Focus();
+      return;
+    }
+    else if (!DateTime.TryParse(startTime, out dtStart) || dtStart < DateTime.Today)
+    {
+      //預定入校時間格式有誤，請重新選填!
+      basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg5_6);
+      TextBox_startTime.Focus();
+      return;
+    }
+    else if (basic.IsDate(endTime) == false)
+    {
+      //預定離校時間格式有誤，請重新選填!
+      basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg5_2);
+      TextBox_endTime.Focus();
+      return;
+    }
+    else if (!DateTime.TryParse(endTime, out dtEnd) || dtEnd < DateTime.Today)
+    {
+      //預定入校時間格式有誤，請重新選填!
+      basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg5_7);
+      TextBox_endTime.Focus();
+      return;
+    }
+    else if (TextBox45.Text.TrimEnd() == string.Empty)
+    {
+      //接待單位/人員尚未填寫
+      basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg5_3);
+      TextBox45.Focus();
+      return;
+    }
+    else if (TextBox60.Text.TrimEnd() == string.Empty)
+    {
+      //接待地點尚未填寫
+      basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg5_4);
+      TextBox60.Focus();
+      return;
+    }
+
+    DateTime dtLast = dtStart.AddDays(7);
+    if (dtEnd < dtStart || dtEnd > dtLast)
+    {
+      //預定離校時間不得大於一週!
+      basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg5_8);
+      TextBox_endTime.Focus();
+      return;
+    }
+
+    //if (GridView1.Rows.Count > 0 && GridView2.Rows.Count == 0)
+    //{
+    //    //手動新增通知對象尚未新增
+    //    basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg29);
+    //    return;
+    //}
+    switch (DropDownList1.SelectedValue)
+    {
+      case "1": //一般訪客
+        if (TextBox26.Text == string.Empty) //訪客姓名
+        {
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg3);
+          TextBox26.Focus();
+          return;
+        }
+        if (TextBox51.Text == string.Empty) //人數
+        {
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg26);
+          TextBox51.Focus();
+          return;
+        }
+        break;
+      case "2": //外校生家長
+        if (TextBox50.Text == string.Empty) //學生姓名
+        {
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg4);
+          TextBox50.Focus();
+          return;
+        }
+        if (TextBox52.Text == string.Empty) //人數
+        {
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg26);
+          TextBox52.Focus();
+          return;
+        }
+        break;
+      case "3": //政府機關
+        if (TextBox35.Text == string.Empty) //機關名稱
+        {
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg6);
+          TextBox35.Focus();
+          return;
+        }
+        if (TextBox35.Text == string.Empty) //領隊姓名
+        {
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg7);
+          TextBox35.Focus();
+          return;
+        }
+        if (TextBox53.Text == string.Empty) //人數
+        {
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg26);
+          TextBox53.Focus();
+          return;
+        }
+        break;
+      case "4": //媒體
+        if (TextBox39.Text == string.Empty) //媒體名稱
+        {
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg18);
+          TextBox39.Focus();
+          return;
+        }
+        if (TextBox40.Text == string.Empty) //姓名
+        {
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg19);
+          TextBox40.Focus();
+          return;
+        }
+        if (TextBox54.Text == string.Empty) //人數
+        {
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg26);
+          TextBox54.Focus();
+          return;
+        }
+        break;
+      case "5": //在籍學生家長
+        if (TextBox1.Text == string.Empty) //學生姓名
+        {
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg4);
+          TextBox1.Focus();
+          return;
+        }
+        if (TextBox8.Text == string.Empty) //學生班級
+        {
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg20);
+          TextBox8.Focus();
+          return;
+        }
+        if (TextBox55.Text == string.Empty) //人數
+        {
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg27);
+          TextBox55.Focus();
+          return;
+        }
+        break;
+      case "6": //校友
+        if (TextBox12.Text == string.Empty) //校友姓名
+        {
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg23);
+          TextBox12.Focus();
+          return;
+        }
+        if (TextBox56.Text == string.Empty) //人數
+        {
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg28);
+          TextBox56.Focus();
+          return;
+        }
+        break;
+      case "7": //廠商
+        if (TextBox19.Text == string.Empty) //廠商名稱
+        {
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg24);
+          TextBox19.Focus();
+          return;
+        }
+        if (TextBox57.Text == string.Empty) //人數
+        {
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg26);
+          TextBox57.Focus();
+          return;
+        }
+        break;
+      case "8": //團體訪客
+        if (TextBox22.Text == string.Empty) //團體名稱
+        {
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg25);
+          TextBox22.Focus();
+          return;
+        }
+        if (TextBox25.Text == string.Empty) //領隊姓名
+        {
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg7);
+          TextBox25.Focus();
+          return;
+        }
+        if (TextBox58.Text == string.Empty) //人數
+        {
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg26);
+          TextBox58.Focus();
+          return;
+        }
+        break;
+      case "9": //學校活動
+        if (TextBox4.Text == string.Empty) //人數
+        {
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg26);
+          TextBox4.Focus();
+          return;
+        }
+        break;
+      case "10": //假日到校
+        if (TextBox14.Text == string.Empty) //人數
+        {
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg26);
+          TextBox14.Focus();
+          return;
+        }
+        break;
+    }
+
+    string DBName = "DB_Tea_VToSchool";
+    SqlConnection cn = new SqlConnection(ConfigurationManager.ConnectionStrings[DBName].ConnectionString.ToString());
+    cn.Open();
+    StringBuilder str_cmd = new StringBuilder();
+    //交易還原
+    str_cmd.AppendLine("declare @chk tinyint;");
+    str_cmd.AppendLine("set @chk=0;");
+    str_cmd.AppendLine("Begin Transaction [Table]");
+    //--設定流水號
+    str_cmd.AppendLine("DECLARE @ListNum Nvarchar(20);");
+    str_cmd.AppendLine("select @ListNum =  SUBSTRING(Max(ListNum),10,4)");
+    str_cmd.AppendLine("from dbo.List_V");
+    str_cmd.AppendLine("where ListNum like 'V" + DateTime.Today.ToString("yyyyMMdd") + "%'");
+    str_cmd.AppendLine("if (@ListNum is Null)");
+    str_cmd.AppendLine("begin");
+    str_cmd.AppendLine("  set @ListNum = '0001'");
+    str_cmd.AppendLine("end");
+    str_cmd.AppendLine("else");
+    str_cmd.AppendLine("begin");
+    str_cmd.AppendLine("  set @ListNum = convert(int,@ListNum) + 1 ;");
+    str_cmd.AppendLine("end");
+    str_cmd.AppendLine("set @ListNum = 'V" + DateTime.Today.ToString("yyyyMMdd") + "' + right('0000'+ @ListNum,4) ;");
+
+    //簽核流程
+    string FlowNo;
+    List<string> EmployeeID_List;
+    VtoSchool.getFlowNo(Campus_save.Text.Substring(0, 2), DropDownList1.SelectedValue, out FlowNo);
+    bool bParking = false;
+
+    foreach (ListItem li in CheckBoxList1.Items)
+    {
+      if (li.Text == "校內停車" && li.Selected)
+      {
+        bParking = true;
+        break;
+      }
+    }
+
+    if (bParking && Campus_save.Text.Substring(0, 2).ToString() == "秀岡")
+    {
+      string sParkingFlowEmpID = ConfigurationManager.AppSettings["XG_Parking_Flow"];
+
+      if (sParkingFlowEmpID.Length <= 0)
+      {
+        //總務部車位業管人未設定
+        basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg29);
+        return;
+      }
+
+      str_cmd.AppendLine("insert into List_Allow");
+      str_cmd.AppendLine("(ListNum,EmployeeID,Name,Series)");
+      str_cmd.AppendLine("select @ListNum,EmployeeID,Name,'" + (temp_series + 1) + "'");
+      str_cmd.AppendLine("from DB_Mis_Admin.dbo.Sys_Interinfo_Person_V ");
+      str_cmd.AppendLine("where EmployeeID = '" + sParkingFlowEmpID + "' ;");
+      str_cmd.AppendLine("IF @@Error <> 0 BEGIN SET @chk = 1 END");
+      temp_series = temp_series + 1;
+    }
+
+    //簽核流程
+    if (FlowNo == "normal5" || FlowNo == "normal8")
+    {
+      int MaxJobGrade;
+      if (FlowNo == "normal5")
+      {
+        MaxJobGrade = 40;
+      }
+      else
+      {
+        MaxJobGrade = 70;
+      }
+      //一般流程跑至主任
+      if (Literal_Flow.Text.Contains("無需簽核，直接通過") && !(bParking && Campus_save.Text.Substring(0, 2).ToString() == "秀岡"))
+      {
+
+      }
+      else
+      {
+        //20200917 新竹校區幼兒園特殊流程，部門為幼兒園且表單為外校生家長與在學生家長類別時，簽核對象只需簽到總園長徐雅婷，將MaxJobGrade = 7;
+        Boolean PreSchoolDept = false;
+        Boolean PreSchoolVTypeID = false;
+
+        if ((DeptID.Text == "HC108001") || (DeptID.Text == "HC108002") || (DeptID.Text == "HC108003"))
+        {
+          PreSchoolDept = true;
+        }
+        if ((DropDownList1.SelectedValue == "2") || (DropDownList1.SelectedValue == "5"))
+        {
+          PreSchoolVTypeID = true;
+        }
+        if (PreSchoolDept && PreSchoolVTypeID)
+        {
+          MaxJobGrade = 60;
+        }
+
+        int MemberJobGrade = EIP.GetJobGrade(Session["EmployeeID"].ToString());
+        string[] Allow_EmployeeID = EIP.GetRouteByJobGrade(EIP.GetDeptID(EmployeeID.Text), MemberJobGrade, MaxJobGrade).Split(';');
+        Allow_EmployeeID = VtoSchool.Get_SpecialSignList(EIP.GetDeptID(EmployeeID.Text), MaxJobGrade, Allow_EmployeeID, EmployeeID.Text);
+
+        for (int i = 0; i < Allow_EmployeeID.GetLength(0); i++)
+        {
+          if (DeptID.Text == "XG108002" && Allow_EmployeeID[i] == "C880926") //主任說 秀岡資源中心招生組 不要跑聖陶主任
+          {
+            continue; //繼續往迴圈的下一個數跑
+          }
+          if (Allow_EmployeeID[i] == "" || Allow_EmployeeID[i] == EmployeeID.Text)
+          {
+            continue; //繼續往迴圈的下一個數跑
+          }
+          str_cmd.AppendLine("insert into List_Allow");
+          str_cmd.AppendLine("(ListNum,EmployeeID,Name,Series)");
+          str_cmd.AppendLine("select @ListNum,EmployeeID,Name,'" + (temp_series + 1) + "'");
+          str_cmd.AppendLine("from DB_Mis_Admin.dbo.Sys_Interinfo_Person_V ");
+          str_cmd.AppendLine("where EmployeeID = '" + Allow_EmployeeID[i] + "' ;");
+          str_cmd.AppendLine("IF @@Error <> 0 BEGIN SET @chk = 1 END");
+          temp_series = temp_series + 1;
+        }
+      }
+    }
+    else
+    {
+      //特殊流程
+      if (Literal_Flow.Text.Contains("無需簽核，直接通過") && !(bParking && Campus_save.Text.Substring(0, 2).ToString() == "秀岡"))
+      {
+
+      }
+      else
+      {
+        EmployeeID_List = getFlowEmployeeID();
+        for (int i = 0; i < EmployeeID_List.Count; i++)
+        {
+          if (EmployeeID_List[i] != EmployeeID.Text)
+          {
+            str_cmd.AppendLine("insert into List_Allow");
+            str_cmd.AppendLine("(ListNum,EmployeeID,Name,Series)");
+            str_cmd.AppendLine("select @ListNum,EmployeeID,Name,'" + (temp_series + 1) + "'");
+            str_cmd.AppendLine("from DB_Mis_Admin.dbo.Sys_Interinfo_Person_V ");
+            str_cmd.AppendLine("where EmployeeID = '" + EmployeeID_List[i] + "' ;");
+            str_cmd.AppendLine("IF @@Error <> 0 BEGIN SET @chk = 1 END");
+            temp_series++;
+          }
+        }
+      }
+    }
+
+    //--將抓出總簽核人數為最大關卡數
+    str_cmd.AppendLine("DECLARE @T_level int;");
+    str_cmd.AppendLine("select @T_level=max(Series)");
+    str_cmd.AppendLine("from List_Allow");
+    str_cmd.AppendLine("where ListNum = @ListNum; ");
+    str_cmd.AppendLine("if(@T_level is null)");
+    str_cmd.AppendLine("set @T_level=0");
+
+    //寫入主表
+    if (Literal_Flow.Text.Contains("無需簽核，直接通過") && !(bParking && Campus_save.Text.Substring(0, 2).ToString() == "秀岡"))
+    {
+      str_cmd.AppendLine("insert into List_V");
+      str_cmd.AppendLine("(ListNum,Campus,EmployeeID,Name,DeptName,DeptID,Apply_Datetime,VTypeID,Purpose,startTime,endTime,Reception,ReceptionLocation,interviewLocation,constructionArea,SpeRequest,Notes,C_Level,T_Level,ListStatus)");
+      str_cmd.AppendLine("values(@ListNum,@Campus,@EmployeeID,@Name,@DeptName,@DeptID,@Apply_Datetime,@VTypeID,@Purpose,@startTime,@endTime,@Reception,@ReceptionLocation,@interviewLocation,@constructionArea,@SpeRequest,@Notes,'0','0','已核准')");
+      str_cmd.AppendLine("IF @@Error <> 0 BEGIN SET @chk = 1 END");
+    }
+    else
+    {
+      str_cmd.AppendLine("insert into List_V");
+      str_cmd.AppendLine("(ListNum,Campus,EmployeeID,Name,DeptName,DeptID,Apply_Datetime,VTypeID,Purpose,startTime,endTime,Reception,ReceptionLocation,interviewLocation,constructionArea,SpeRequest,Notes,C_Level,T_Level,ListStatus)");
+      str_cmd.AppendLine("values(@ListNum,@Campus,@EmployeeID,@Name,@DeptName,@DeptID,@Apply_Datetime,@VTypeID,@Purpose,@startTime,@endTime,@Reception,@ReceptionLocation,@interviewLocation,@constructionArea,@SpeRequest,@Notes,'0',@T_Level,'審核中')");
+      str_cmd.AppendLine("IF @@Error <> 0 BEGIN SET @chk = 1 END");
+    }
+
+    //寫入子表
+    switch (DropDownList1.SelectedValue)
+    {
+      case "1": //一般訪客
+        str_cmd.AppendLine("insert into 一般訪客子表");
+        str_cmd.AppendLine("(ListNum,VName,VNum,carNum,phoneNum)");
+        str_cmd.AppendLine("values(@ListNum,@VName,@VNum,@carNum,@phoneNum)");
+        str_cmd.AppendLine("IF @@Error <> 0 BEGIN SET @chk = 1 END");
+        break;
+      case "2": //外校生家長
+        str_cmd.AppendLine("insert into 外校生家長子表");
+        str_cmd.AppendLine("(ListNum,parentName,stuName,VNum,carNum,phoneNum)");
+        str_cmd.AppendLine("values(@ListNum,@parentName,@stuName,@VNum,@carNum,@phoneNum)");
+        str_cmd.AppendLine("IF @@Error <> 0 BEGIN SET @chk = 1 END");
+        break;
+      case "3": //政府機關
+        str_cmd.AppendLine("insert into 政府機關子表");
+        str_cmd.AppendLine("(ListNum,governmentName,leaderName,VNum,carNum,phoneNum)");
+        str_cmd.AppendLine("values(@ListNum,@governmentName,@leaderName,@VNum,@carNum,@phoneNum)");
+        str_cmd.AppendLine("IF @@Error <> 0 BEGIN SET @chk = 1 END");
+        break;
+      case "4": //媒體
+        str_cmd.AppendLine("insert into 媒體子表");
+        str_cmd.AppendLine("(ListNum,mediaName,Name,VNum,carNum,phoneNum)");
+        str_cmd.AppendLine("values(@ListNum,@mediaName,@Name2,@VNum,@carNum,@phoneNum)");
+        str_cmd.AppendLine("IF @@Error <> 0 BEGIN SET @chk = 1 END");
+        break;
+      case "5": //在籍學生家長
+        str_cmd.AppendLine("insert into 在籍學生家長子表");
+        str_cmd.AppendLine("(ListNum,stuClass,stuName,stuNum,parentName,VNum,carNum,phoneNum)");
+        str_cmd.AppendLine("values(@ListNum,@stuClass,@stuName,@stuNum,@parentName,@VNum,@carNum,@phoneNum)");
+        str_cmd.AppendLine("IF @@Error <> 0 BEGIN SET @chk = 1 END");
+        break;
+      case "6": //校友
+        str_cmd.AppendLine("insert into 校友子表");
+        str_cmd.AppendLine("(ListNum,alumni,stuNum,VNum,carNum,phoneNum)");
+        str_cmd.AppendLine("values(@ListNum,@alumni,@stuNum,@VNum,@carNum,@phoneNum)");
+        str_cmd.AppendLine("IF @@Error <> 0 BEGIN SET @chk = 1 END");
+        break;
+      case "7": //廠商
+        str_cmd.AppendLine("insert into 廠商子表");
+        str_cmd.AppendLine("(ListNum,companyName,VNum,carNum,phoneNum)");
+        str_cmd.AppendLine("values(@ListNum,@companyName,@VNum,@carNum,@phoneNum)");
+        str_cmd.AppendLine("IF @@Error <> 0 BEGIN SET @chk = 1 END");
+        break;
+      case "8": //團體訪客
+        str_cmd.AppendLine("insert into 團體訪客子表");
+        str_cmd.AppendLine("(ListNum,groupName,leaderName,VNum,carNum,phoneNum)");
+        str_cmd.AppendLine("values(@ListNum,@groupName,@leaderName,@VNum,@carNum,@phoneNum)");
+        str_cmd.AppendLine("IF @@Error <> 0 BEGIN SET @chk = 1 END");
+        break;
+      case "9": //學校活動
+        str_cmd.AppendLine("insert into 學校活動子表");
+        str_cmd.AppendLine("(ListNum,VName,VNum,carNum,phoneNum)");
+        str_cmd.AppendLine("values(@ListNum,@VName,@VNum,@carNum,@phoneNum)");
+        str_cmd.AppendLine("IF @@Error <> 0 BEGIN SET @chk = 1 END");
+        break;
+      case "10": //假日到校
+        str_cmd.AppendLine("insert into 假日到校子表");
+        str_cmd.AppendLine("(ListNum,VName,VNum,carNum,phoneNum)");
+        str_cmd.AppendLine("values(@ListNum,@staffName,@VNum,@carNum,@phoneNum)");
+        str_cmd.AppendLine("IF @@Error <> 0 BEGIN SET @chk = 1 END");
+        break;
+    }
+    //寫入手動加入的通知對象
+    str_cmd.AppendLine("insert into List_noticePerson(ListNum,noticeEmployeeID,noticeName)");
+    str_cmd.AppendLine("select @ListNum,noticeEmployeeID,noticeName");
+    str_cmd.AppendLine("from Temp_noticePerson");
+    str_cmd.AppendLine("where EmployeeID=@EmployeeID");
+    str_cmd.AppendLine("IF @@Error <> 0 BEGIN SET @chk = 1 END");
+
+    str_cmd.AppendLine("delete from Temp_noticePerson");
+    str_cmd.AppendLine("where EmployeeID=@EmployeeID");
+    str_cmd.AppendLine("IF @@Error <> 0 BEGIN SET @chk = 1 END");
+    //寫入檔案
+    if (Session["FileTable"] != null)
+    {
+      string FileName, GuidName;
+      DataTable FileTable = (DataTable)Session["FileTable"];
+      foreach (DataRow myRow in FileTable.Rows)
+      {
+        FileName = myRow["FileName"].ToString().Trim();
+        GuidName = myRow["GuidName"].ToString().Trim();
+        str_cmd.AppendLine("insert into List_File");
+        str_cmd.AppendLine("(ListNum,FileName,GuidName,insertTime)");
+        str_cmd.AppendLine("values(@ListNum,'" + FileName + "','" + GuidName + "','" + DateTime.Now.ToString("yyyy/MM/dd HH:mm;ss") + "')");
+        str_cmd.AppendLine("IF @@Error <> 0 BEGIN SET @chk = 1 END");
+      }
+    }
+    if (Literal_Flow.Text.Contains("無需簽核，直接通過") && !(bParking && Campus_save.Text.Substring(0, 2).ToString() == "秀岡"))
+    {
+      str_cmd.AppendLine("select a.email,b.ListNum");
+      str_cmd.AppendLine("from DB_Mis_Admin.dbo.Sys_Interinfo_Person_V a");
+      str_cmd.AppendLine("inner join List_V b");
+      str_cmd.AppendLine("on a.EmployeeID = b.EmployeeID");
+      str_cmd.AppendLine("where b.ListNum=@ListNum");
+    }
+    else
+    {
+      //找出下一關簽核者mail
+      str_cmd.AppendLine("select email,@ListNum as ListNum");
+      str_cmd.AppendLine("from DB_Mis_Admin.dbo.Sys_Interinfo_Person_V");
+      str_cmd.AppendLine("where EmployeeID in (");
+      str_cmd.AppendLine("    select a.EmployeeID");
+      str_cmd.AppendLine("    from List_Allow a");
+      str_cmd.AppendLine("    inner join List_V b");
+      str_cmd.AppendLine("    on a.ListNum = b.ListNum");
+      str_cmd.AppendLine("    and a.Series = '1'");
+      str_cmd.AppendLine("    where a.ListNum = @ListNum");
+      str_cmd.AppendLine(")");
+    }
+
+    str_cmd.AppendLine("if @chk<>0 Begin");
+    str_cmd.AppendLine("  Rollback Transaction [Table]");
+    str_cmd.AppendLine("end");
+    str_cmd.AppendLine("else Begin");
+    str_cmd.AppendLine("  Commit Transaction [Table]");
+    str_cmd.AppendLine("End");
+
+    SqlCommand cmd = new SqlCommand(str_cmd.ToString(), cn);
+    cmd.Parameters.AddWithValue("@EmployeeID", EmployeeID.Text);
+    cmd.Parameters.AddWithValue("@Campus", Campus_save.Text.Substring(0, 2).ToString());
+    cmd.Parameters.AddWithValue("@Name", Name.Text);
+    cmd.Parameters.AddWithValue("@DeptName", DeptName.Text);
+    cmd.Parameters.AddWithValue("@DeptID", DeptID.Text);
+    cmd.Parameters.AddWithValue("@Apply_Datetime", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"));
+    cmd.Parameters.AddWithValue("@VTypeID", DropDownList1.SelectedValue);
+    cmd.Parameters.AddWithValue("@Purpose", TextBox43.Text);
+    cmd.Parameters.AddWithValue("@startTime", TextBox_startTime.Text + " " + DropDownList2.SelectedValue + ":" + DropDownList3.SelectedValue + ":00");
+    cmd.Parameters.AddWithValue("@endTime", TextBox_endTime.Text + " " + DropDownList4.SelectedValue + ":" + DropDownList15.SelectedValue + ":00");
+    cmd.Parameters.AddWithValue("@Reception", TextBox45.Text);
+    cmd.Parameters.AddWithValue("@ReceptionLocation", TextBox60.Text);
+    cmd.Parameters.AddWithValue("@interviewLocation", TextBox48.Text);
+    cmd.Parameters.AddWithValue("@constructionArea", TextBox49.Text);
+    string speRequest = string.Empty;
+    for (int i = 0; i < CheckBoxList1.Items.Count; i++)
+    {
+      if (CheckBoxList1.Items[i].Selected)
+      {
+        speRequest = speRequest + CheckBoxList1.Items[i].Value + ";";
+      }
+    }
+    speRequest = speRequest.TrimEnd(';');
+    cmd.Parameters.AddWithValue("@SpeRequest", speRequest);
+    cmd.Parameters.AddWithValue("@Notes", TextBox7.Text);
+    switch (DropDownList1.SelectedValue)
+    {
+      case "1": //一般訪客
+        cmd.Parameters.AddWithValue("@VName", TextBox26.Text);
+        cmd.Parameters.AddWithValue("@VNum", TextBox51.Text);
+        cmd.Parameters.AddWithValue("@carNum", TextBox30.Text);
+        cmd.Parameters.AddWithValue("@phoneNum", TextBox31.Text);
+        break;
+      case "2": //外校生家長
+        cmd.Parameters.AddWithValue("@parentName", TextBox32.Text);
+        cmd.Parameters.AddWithValue("@stuName", TextBox50.Text);
+        cmd.Parameters.AddWithValue("@VNum", TextBox52.Text);
+        cmd.Parameters.AddWithValue("@carNum", TextBox33.Text);
+        cmd.Parameters.AddWithValue("@phoneNum", TextBox34.Text);
+        break;
+      case "3": //政府機關
+        cmd.Parameters.AddWithValue("@governmentName", TextBox35.Text);
+        cmd.Parameters.AddWithValue("@leaderName", TextBox38.Text);
+        cmd.Parameters.AddWithValue("@VNum", TextBox53.Text);
+        cmd.Parameters.AddWithValue("@carNum", TextBox36.Text);
+        cmd.Parameters.AddWithValue("@phoneNum", TextBox37.Text);
+        break;
+      case "4": //媒體
+        cmd.Parameters.AddWithValue("@mediaName", TextBox39.Text);
+        cmd.Parameters.AddWithValue("@Name2", TextBox40.Text);
+        cmd.Parameters.AddWithValue("@VNum", TextBox54.Text);
+        cmd.Parameters.AddWithValue("@carNum", TextBox41.Text);
+        cmd.Parameters.AddWithValue("@phoneNum", TextBox42.Text);
+        break;
+      case "5": //在籍學生家長
+        cmd.Parameters.AddWithValue("@stuClass", TextBox8.Text);
+        cmd.Parameters.AddWithValue("@stuName", TextBox1.Text);
+        cmd.Parameters.AddWithValue("@stuNum", TextBox2.Text);
+        cmd.Parameters.AddWithValue("@parentName", TextBox9.Text);
+        cmd.Parameters.AddWithValue("@VNum", TextBox55.Text);
+        cmd.Parameters.AddWithValue("@carNum", TextBox10.Text);
+        cmd.Parameters.AddWithValue("@phoneNum", TextBox11.Text);
+        break;
+      case "6": //校友
+        cmd.Parameters.AddWithValue("@alumni", TextBox12.Text);
+        cmd.Parameters.AddWithValue("@stuNum", TextBox18.Text);
+        cmd.Parameters.AddWithValue("@VNum", TextBox56.Text);
+        cmd.Parameters.AddWithValue("@carNum", TextBox16.Text);
+        cmd.Parameters.AddWithValue("@phoneNum", TextBox17.Text);
+        break;
+      case "7": //廠商
+        cmd.Parameters.AddWithValue("@companyName", TextBox19.Text);
+        cmd.Parameters.AddWithValue("@VNum", TextBox57.Text);
+        cmd.Parameters.AddWithValue("@carNum", TextBox20.Text);
+        cmd.Parameters.AddWithValue("@phoneNum", TextBox21.Text);
+        break;
+      case "8": //團體訪客
+        cmd.Parameters.AddWithValue("@groupName", TextBox22.Text);
+        cmd.Parameters.AddWithValue("@leaderName", TextBox25.Text);
+        cmd.Parameters.AddWithValue("@VNum", TextBox58.Text);
+        cmd.Parameters.AddWithValue("@carNum", TextBox23.Text);
+        cmd.Parameters.AddWithValue("@phoneNum", TextBox24.Text);
+        break;
+      case "9": //學校活動
+        cmd.Parameters.AddWithValue("@VName", TextBox3.Text);
+        cmd.Parameters.AddWithValue("@VNum", TextBox4.Text);
+        cmd.Parameters.AddWithValue("@carNum", TextBox5.Text);
+        cmd.Parameters.AddWithValue("@phoneNum", TextBox6.Text);
+        break;
+      case "10": //假日到校
+        cmd.Parameters.AddWithValue("@staffName", TextBox13.Text);
+        cmd.Parameters.AddWithValue("@VNum", TextBox14.Text);
+        cmd.Parameters.AddWithValue("@carNum", TextBox15.Text);
+        cmd.Parameters.AddWithValue("@phoneNum", TextBox27.Text);
+        break;
+    }
+    SqlDataReader dr;
+
+    try
+    {
+      dr = cmd.ExecuteReader();
+      string ListNum = string.Empty;
+      string email = string.Empty;
+      string mailSubject = string.Empty;
+      string GuardEmail = string.Empty;
+      StringBuilder mailBody = new StringBuilder();
+
+      if (Literal_Flow.Text.Contains("無需簽核，直接通過") && !(bParking && Campus_save.Text.Substring(0, 2).ToString() == "秀岡"))
+      {
+        dr.Read();
+        ListNum = dr["ListNum"].ToString();
+        StringBuilder mailInfo = VtoSchool.mailbody(ListNum);
+        mailBody.AppendLine(mailInfo.ToString());
+        mailBody.AppendLine("請點選下列連結，開啟審核文件:<br>Please Click The Link Below : <br><br>");
+        mailBody.AppendLine("<a href='http://w2.kcbs.ntpc.edu.tw/VToSchool/View.aspx?num=" + ListNum + "'>康橋國際學校-訪客入校系統</a><br>");
+        email = dr["email"].ToString();
+        mailSubject = Name.Text + "提出的訪客入校單已核准。" + Name.Text + "'s application has been approved." + ListNum;
+        //審核過的單要CC給通知對象
+        string CCto = VtoSchool.GetNoticeEmail(Campus_save.Text.Substring(0, 2).ToString(), DropDownList1.SelectedValue);
+        //直接通過的單據也要通知使用者自己手動新增的人員
+        string CCto_byUser = VtoSchool.GetNoticeEmail_byUser(ListNum);
+        if (Campus_save.Text.Substring(0, 2).ToString() == "秀岡" && CheckBoxList1.SelectedValue.Contains("用餐"))
+        {
+          CCto += "verashih@kcis.ntpc.edu.tw";
+        }
+        try
+        {
+          Mail.Send_Mail(Request.Url.Host, mailBody.ToString(), mailSubject, email, CCto + ";" + CCto_byUser);
+          //申請單已送出。
+          basic.Script_AlertHref(this.Page, Resources.Resource.ErrorMsg10_, "PersonalList.aspx");
+        }
+        catch (Exception ex)
+        {
+          //20200918 修改：明裕已刪除 Sys_SetErrorMail 此 Table 
+          string getITMail = ConfigurationManager.AppSettings["ErrorMail"];
+
+          Mail.Send_Mail(Request.Url.Host, mailBody.ToString() + ex.ToString(), "【" + Campus_save.Text.Substring(0, 2).ToString() + "校區】" + mailSubject + " 發信異常", getITMail, ConfigurationManager.AppSettings["AdminMail"]);
+          basic.Script_AlertHref(this.Page, Resources.Resource.ErrorMsg11, "PersonalList.aspx");
+        }
+        dr.Close();
+      }
+      else
+      {
+        while (dr.Read())
+        {
+          ListNum = dr["ListNum"].ToString();
+          email = dr["email"].ToString();
+          mailSubject = "請簽核" + Name.Text + "提出的訪客入校單 Please approve " + Name.Text + "'s application." + ListNum;
+          StringBuilder mailInfo = VtoSchool.mailbody(ListNum);
+          mailBody.AppendLine(mailInfo.ToString());
+          mailBody.AppendLine("請點選下列連結，開啟審核文件:<br>Please Click The Link Below : <br><br>");
+          mailBody.AppendLine("<a href='http://w2.kcbs.ntpc.edu.tw/VToSchool/View.aspx?num=" + ListNum + "'>康橋國際學校-訪客入校系統</a><br>");
+          try
+          {
+            if (Campus_save.Text.Substring(0, 2).ToString() == "秀岡" && CheckBoxList1.SelectedValue.Contains("用餐"))
+            {
+              Mail.Send_Mail(Request.Url.Host, mailBody.ToString(), mailSubject, email, "verashih@kcis.ntpc.edu.tw");
+            }
+            else
+            {
+              if (CheckBox1.Checked)
+              {
+                GuardEmail = VtoSchool.GetGuardEmail(Campus_save.Text);
+              }
+              Mail.Send_Mail(Request.Url.Host, mailBody.ToString(), mailSubject, email, GuardEmail);
+            }
+
+            //申請單已送出，請耐心等候審核。
+            basic.Script_AlertHref(this.Page, Resources.Resource.ErrorMsg10, "PersonalList.aspx");
+          }
+          catch (Exception ex)
+          {
+            string getITMail = ConfigurationManager.AppSettings["ErrorMail"];
+            Mail.Send_Mail(Request.Url.Host, mailBody.ToString() + ex.ToString(), "【" + Campus_save.Text.Substring(0, 2).ToString() + "校區】" + mailSubject + " 發信異常", getITMail, ConfigurationManager.AppSettings["AdminMail"]);
+            basic.Script_AlertHref(this.Page, Resources.Resource.ErrorMsg11, "PersonalList.aspx");
+          }
+          finally
+          {
+            mailBody.Length = 0;
+          }
+        }
+        dr.Close();
+      }
+    }
+    catch (Exception ex)
+    {
+      //執行資料庫異常，請洽資訊組。
+      basic.Script_AlertMsg(this.Page, string.Format("{0}\n{1}", Resources.Resource.ErrorMsg8, ex.Message));
+    }
+    finally
+    {
+      cmd.Cancel();
+      cn.Close();
+      cn.Dispose();
+    }
+  }
+  protected void Button_FileUpload1_Click(object sender, EventArgs e)
+  {
+    string FilePath = Server.MapPath(@"~\UploadFiles") + @"\";
+    DataTable FileTable = new DataTable();
+
+    if (Session["FileTable"] != null)
+    {
+      FileTable = (DataTable)Session["FileTable"];
+    }
+    else
+    {
+      FileTable.Columns.Add(new DataColumn("FileName", typeof(string)));
+      FileTable.Columns.Add(new DataColumn("GuidName", typeof(string)));
+    }
+
+    if (FileUpload1.HasFile)
+    {
+      string extension = Path.GetExtension(FileUpload1.PostedFile.FileName).ToLower();
+      if (extension != ".doc" && extension != ".docx" && extension != ".xls" && extension != ".xlsx" && extension != ".pdf" && extension != ".jpg" && extension != ".jpeg" && extension != ".png" && extension != ".bmp")
+      {
+        //"僅允許上傳doc, xls, pdf, jpg, png或bmp檔！"
+        basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg12);
+      }
+      else
+      {
+        int fileLen = FileUpload1.PostedFile.ContentLength;
+        if (fileLen > (4 * 1024 * 1024))
+        {
+          //單一上傳檔案需小於4MB！
+          basic.Script_AlertMsg(this.Page, Resources.Resource.ErrorMsg13);
+        }
+        else
+        {
+          string FileName = Path.GetFileName(FileUpload1.PostedFile.FileName);
+          string GuidName = Guid.NewGuid().ToString().Replace("-", "") + extension;
+          FileUpload1.SaveAs(FilePath + GuidName);
+
+          DataRow myRow = FileTable.NewRow();
+          myRow["FileName"] = FileName.Replace("'", "");
+          myRow["GuidName"] = GuidName;
+
+          FileTable.Rows.Add(myRow);
+
+          Session["FileTable"] = FileTable;
+
+          _myTableBind();
+        }
+      }
+    }
+  }
+  protected void _myTableBind()
+  {
+    int RowCount = 1;
+
+    PlaceHolderAttachment.Controls.Clear();
+
+    if (Session["FileTable"] != null)
+    {
+      string FileName, GuidName;
+
+      DataTable FileTable = (DataTable)Session["FileTable"];
+
+      foreach (DataRow myRow in FileTable.Rows)
+      {
+        FileName = myRow["FileName"].ToString().Trim();
+        GuidName = myRow["GuidName"].ToString().Trim();
+
+        LinkButton Btn = new LinkButton();
+        Btn.ID = "Btn_" + GuidName;
+        Btn.Text = "移除";
+        Btn.Click += new EventHandler(ButtonRemove_Click);
+
+        PlaceHolderAttachment.Controls.Add(new LiteralControl("<span style=\"font-size:13px;\">&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"color:#ff00ff;\">"));
+        PlaceHolderAttachment.Controls.Add(new LiteralControl(RowCount.ToString() + ". " + FileName + "</span>&nbsp;&nbsp;"));
+        PlaceHolderAttachment.Controls.Add(Btn);
+        PlaceHolderAttachment.Controls.Add(new LiteralControl("</span>"));
+        PlaceHolderAttachment.Controls.Add(new LiteralControl("<br />"));
+
+        RowCount++;
+      }
+    }
+    else
+    {
+      PlaceHolderAttachment.Controls.Add(new LiteralControl("<span style=\"font-size:13px; color:#ff00ff;\">&nbsp;&nbsp;&nbsp;&nbsp;---" + Resources.Resource.NoProof + "---</span>"));
+    }
+  }
+  protected void ButtonRemove_Click(object sender, EventArgs e)
+  {
+    string FilePath = Server.MapPath(@"~\UploadFiles") + @"\";
+    string GuidName = ((LinkButton)sender).ID.Replace("Btn_", "");
+    DataTable FileTable = (DataTable)Session["FileTable"];
+
+    DataRow myRow = FileTable.Select("GuidName='" + GuidName + "'")[0];
+
+    if (File.Exists(FilePath + myRow["GuidName"].ToString().Trim()))
+    {
+      File.Delete(FilePath + myRow["GuidName"].ToString().Trim());
+    }
+
+    FileTable.Rows.Remove(myRow);
+
+    Session["FileTable"] = FileTable.Rows.Count == 0 ? null : FileTable;
+
+    _myTableBind();
+  }
+  protected void showGridView1(string input)
+  {
+    string str_cmd = string.Format(@"SELECT '員工' as 類型, EmployeeID as 編號,Name as 名稱 FROM Sys_Interinfo_Person_V
+                                        WHERE (outdate is null or outdate+1>getdate())
+                                        AND (EmployeeID like '%{0}%' or Name like '%{0}%')
+                                        AND Campus in ('秀岡校區','青山校區','新竹校區','林口校區')
+                                      UNION
+                                      SELECT '處室' as 類型, segment_no_sz as 編號, segment_name as 名稱 FROM Interinfo_Dept
+                                        WHERE GETDATE() between begindate AND enddate
+                                        AND (segment_no_sz like '%{0}%' or segment_name like '%{0}%')
+                                        AND Campus='{1}'", input, Campus_save.Text);
+    //StringBuilder str_cmd = new StringBuilder();
+    //str_cmd.AppendLine("select EmployeeID as 員編,Name as 姓名 from Sys_Interinfo_Person_V");
+    //str_cmd.AppendLine("where (outdate is null or outdate+1>getdate())");
+    //str_cmd.AppendLine("and (EmployeeID like '%" + input + "%' or Name like '%" + input + "%')");
+    //str_cmd.AppendLine("and Campus in('秀岡校區','青山校區','新竹校區','林口校區')");
+    SqlDataSource1.SelectCommand = str_cmd.ToString();
+    GridView1.DataBind();
+  }
+
+  protected void GridView1_RowCommand(object sender, GridViewCommandEventArgs e)
+  {
+    if (e.CommandName == "myInsert")
+    {
+      Button bt = (Button)e.CommandSource;
+      GridViewRow myRow = (GridViewRow)bt.NamingContainer;
+
+      string sType = myRow.Cells[0].Text;
+      if (sType == "員工")
+      {
+        string noticeEmployeeID = myRow.Cells[1].Text;
+        string noticeName = myRow.Cells[2].Text;
+
+        AddTempNoticePersonByEmployee(noticeEmployeeID, noticeName);
+      }
+      else
+      { 
+        string noticeDeptID = myRow.Cells[1].Text;
+
+        AddTempNoticePersonByDeptID(noticeDeptID);
+      }
+
+      TextBox59.Text = string.Empty;
+      GridView1.Visible = false;
+      GridView2.DataBind();
+    }
+  }
+
+  protected void Button2_Click(object sender, EventArgs e)
+  {
+    showGridView1(TextBox59.Text);
+    if (GridView1.Rows.Count > 0)
+    {
+      GridView1.Visible = true;
+    }
+    else
+    {
+      GridView1.Visible = false;
+    }
+  }
+
+  private void AddTempNoticePersonByEmployee(string sNoticeEmployeeID, string sNoticeName)
+  {
+    string DBName = "DB_Tea_VToSchool";
+    SqlConnection cn = new SqlConnection(ConfigurationManager.ConnectionStrings[DBName].ConnectionString.ToString());
+    cn.Open();
+    StringBuilder str_cmd = new StringBuilder();
+    //交易還原
+    str_cmd.AppendLine("declare @chk tinyint;");
+    str_cmd.AppendLine("set @chk=0;");
+    str_cmd.AppendLine("Begin Transaction [Table]");
+
+    str_cmd.AppendLine("insert into Temp_noticePerson");
+    str_cmd.AppendLine("(EmployeeID,noticeEmployeeID,noticeName)");
+    str_cmd.AppendLine("values(@EmployeeID,@noticeEmployeeID,@noticeName)");
+    str_cmd.AppendLine("IF @@Error <> 0 BEGIN SET @chk = 1 END");
+
+    str_cmd.AppendLine("if @chk<>0 Begin");
+    str_cmd.AppendLine("  Rollback Transaction [Table]");
+    str_cmd.AppendLine("end");
+    str_cmd.AppendLine("else Begin");
+    str_cmd.AppendLine("  Commit Transaction [Table]");
+    str_cmd.AppendLine("End");
+
+    SqlCommand cmd = new SqlCommand(str_cmd.ToString(), cn);
+    cmd.Parameters.AddWithValue("@EmployeeID", EmployeeID.Text);
+    cmd.Parameters.AddWithValue("@noticeEmployeeID", sNoticeEmployeeID);
+    cmd.Parameters.AddWithValue("@noticeName", sNoticeName);
+
+    try
+    {
+      cmd.ExecuteNonQuery();
+    }
+    catch (Exception ex)
+    {
+      Mail.Send_Mail(Request.Url.Host, ex.ToString(), EmployeeID.Text + "申請表單時新增通知對象發生異常", ConfigurationManager.AppSettings["ErrorMail"]);
+      basic.Script_AlertHref(this.Page, Resources.Resource.ErrorMsg11, "Fill_in.aspx");
+    }
+    finally
+    {
+      str_cmd.Length = 0;
+      cmd.Cancel();
+      cn.Close();
+      cn.Dispose();
+    }
+  }
+
+  private void AddTempNoticePersonByDeptID(string sNoticeDeptID)
+  {
+    string DBName = "DB_MisAdmin";
+    SqlConnection cn = new SqlConnection(ConfigurationManager.ConnectionStrings[DBName].ConnectionString.ToString());
+    cn.Open();
+    string str_cmd = string.Format(@"SELECT [EmployeeID],[Name]
+                                      FROM [DB_Mis_Admin].[dbo].[Sys_Interinfo_Person_V]
+                                      WHERE DeptID='{0}' AND (outdate IS NULL OR outdate > GETDATE())
+                                      AND Campus in('秀岡校區','青山校區','新竹校區','林口校區')
+                                      AND SUBSTRING(EmployeeID,1,1)='C'", sNoticeDeptID);
+
+    SqlCommand cmd = new SqlCommand(str_cmd.ToString(), cn);
+
+    try
+    {
+      using (SqlDataReader dr = cmd.ExecuteReader())
+      {
+        while (dr.Read()) 
+        {
+          string sNoticeEmployeeID = dr[""].ToString();
+          string sNoticeName = dr["Name"].ToString();
+
+          AddTempNoticePersonByEmployee(sNoticeEmployeeID, sNoticeName);
+        }
+      }
+    }
+    catch (Exception ex)
+    {
+      Mail.Send_Mail(Request.Url.Host, ex.ToString(), EmployeeID.Text + "申請表單時新增通知對象發生異常", ConfigurationManager.AppSettings["ErrorMail"]);
+      basic.Script_AlertHref(this.Page, Resources.Resource.ErrorMsg11, "Fill_in.aspx");
+    }
+    finally
+    {
+      cmd.Cancel();
+      cn.Close();
+      cn.Dispose();
+    }
+  }
+}
